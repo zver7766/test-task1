@@ -1,0 +1,47 @@
+[
+  {
+    "Type": 0,
+    "Name": "Bombastick",
+    "CategoryId": 1,
+    "Cost": 2,
+    "Content": "It`s a super toy",
+    "ViewsCount": 0,
+    "IsActive": true
+  },
+  {
+    "Type": 1,
+    "Name": "<p>Name</p>",
+    "CategoryId": 2,
+    "Cost": 11,
+    "Content": "<a>Test content</a>",
+    "ViewsCount": 0,
+    "IsActive": true
+  },
+  {
+    "Type": 2,
+    "Name": "http://localhost:5001",
+    "CategoryId": 3,
+    "Cost": 1,
+    "Content": "Banner of the banners",
+    "ViewsCount": 0,
+    "IsActive": true
+  },
+  {
+    "Type": 3,
+    "Name": "https://localhost:5001/video.mp4",
+    "CategoryId": 3,
+    "Cost": 6,
+    "Content": "Video game doom",
+    "ViewsCount": 0,
+    "IsActive": true
+  },
+  {
+    "Type": 1,
+    "Name": "Test video",
+    "CategoryId": 3,
+    "Cost": 40,
+    "Content": "VideoGameIsTheBests",
+    "ViewsCount": 0,
+    "IsActive": true
+  }
+]
