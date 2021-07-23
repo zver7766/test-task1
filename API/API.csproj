@@ -16,12 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
