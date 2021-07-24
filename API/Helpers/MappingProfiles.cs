@@ -16,7 +16,8 @@ namespace API.Helpers
             CreateMap<Advertisement, AdvertisementToReturnDto>()
                 .ForMember(d => d.Category,
                     o => o.MapFrom(s => s.Category.Name));
-
+          
+            CreateMap<Statistic, StatisticToReturnDto>().ReverseMap();
 
         }
     }

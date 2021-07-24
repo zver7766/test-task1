@@ -10,6 +10,8 @@ namespace API.Extensions
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+            services.AddScoped<IStatisticService, StatisticService>();
+            services.AddScoped<IAdvertisementService, AdvertisementService>();
 
             return services;
         }

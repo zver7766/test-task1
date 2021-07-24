@@ -6,7 +6,9 @@ namespace Core.Specifications
     {
         public AdvertisementWithCategoriesSpecification(AdvertisementSpecParams adParams)
          :base(x =>
-            (!adParams.CategoryId.HasValue || x.CategoryId == adParams.CategoryId))
+            (!adParams.CategoryId.HasValue || x.CategoryId == adParams.CategoryId) && 
+            (!adParams.Type.HasValue || x.Type == adParams.Type) &&
+            x.IsActive)
         {
             AddInclude(x => x.Category);
 
