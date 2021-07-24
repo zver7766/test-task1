@@ -13,7 +13,7 @@ namespace Core.Specifications
             : base(x =>
                 x.IsActive && (x.Id == adId))
         {
-
+            AddInclude(x => x.Category);
         }
     }
 }

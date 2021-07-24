@@ -16,5 +16,6 @@ namespace API.Dtos
         public string Content { get; set; }
         public int ViewsCount { get; set; }
         public bool IsActive { get; set; }
+        public int Clicks { get; set; }
     }
 }

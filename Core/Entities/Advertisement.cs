@@ -12,5 +12,6 @@ namespace Core.Entities
         public string Content { get; set; }
         public int ViewsCount { get; set; }
         public bool IsActive { get; set; } = true;
+        public int Clicks { get; set; }
     }
 }

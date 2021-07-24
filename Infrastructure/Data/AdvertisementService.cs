@@ -46,7 +46,8 @@ namespace Infrastructure.Data
                     Name = addCreateParams.Name,
                     Type = addCreateParams.Type,
                     ViewsCount = 0,
-                    CategoryId = category.Id == null ? 0 : category.Id
+                    CategoryId = category.Id == null ? 0 : category.Id,
+                    Clicks = 0
                 };
                 _unitOfWork.Repository<Advertisement>().Add(ad);
 
