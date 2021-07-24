@@ -35,7 +35,8 @@ namespace API.Controllers
 
            var createdAd = await _advertisementService.CreateAdAsync(adCreateParams);
 
-           if (createdAd == null) return BadRequest("Ad does not created");
+           if (createdAd == null || createdAd.Name == "406") 
+               return BadRequest("Ad does not created or Url not correct");
 
            var mapperAd = _mapper.Map<Advertisement,AdvertisementToReturnDto>(createdAd);
 

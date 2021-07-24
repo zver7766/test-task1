@@ -5,7 +5,7 @@
     "CategoryId": 1,
     "Cost": 2,
     "Content": "It`s a super toy",
-    "ViewsCount": 0,
+    "ViewsCount": 30,
     "IsActive": true
   },
   {
@@ -14,7 +14,7 @@
     "CategoryId": 2,
     "Cost": 11,
     "Content": "<a>Test content</a>",
-    "ViewsCount": 0,
+    "ViewsCount": 550,
     "IsActive": true
   },
   {
@@ -23,7 +23,7 @@
     "CategoryId": 3,
     "Cost": 1,
     "Content": "Banner of the banners",
-    "ViewsCount": 0,
+    "ViewsCount": 2,
     "IsActive": true
   },
   {
@@ -32,7 +32,7 @@
     "CategoryId": 3,
     "Cost": 6,
     "Content": "Video game doom",
-    "ViewsCount": 0,
+    "ViewsCount": 2220,
     "IsActive": true
   },
   {
@@ -41,7 +41,7 @@
     "CategoryId": 3,
     "Cost": 40,
     "Content": "VideoGameIsTheBests",
-    "ViewsCount": 0,
+    "ViewsCount": 534,
     "IsActive": true
   }
 ]

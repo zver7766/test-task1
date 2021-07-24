@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Entities;
 using Core.Intefraces;
@@ -29,22 +30,35 @@ namespace Infrastructure.Data
             var categoriesToFilter = await _unitOfWork.Repository<Category>().ListAllAsync();
             var category = categoriesToFilter.FirstOrDefault(x => x.Name == addCreateParams.Category);
 
-            var ad = new Advertisement
+            var isValidUrl = true;
+
+            if (addCreateParams.Type is AdType.BannerAd or AdType.VideoAd)
+                isValidUrl = Uri.IsWellFormedUriString(addCreateParams.Name, UriKind.RelativeOrAbsolute);
+
+            Advertisement ad;
+            if (isValidUrl)
+            { 
+                ad = new Advertisement
+                {
+                    Content = addCreateParams.Content,
+                    Cost = addCreateParams.Cost,
+                    IsActive = true,
+                    Name = addCreateParams.Name,
+                    Type = addCreateParams.Type,
+                    ViewsCount = 0,
+                    CategoryId = category.Id == null ? 0 : category.Id
+                };
+                _unitOfWork.Repository<Advertisement>().Add(ad);
+
+                await _unitOfWork.Complete();
+
+                return ad;
+            }
+
+            return ad = new Advertisement
             {
-                Content = addCreateParams.Content,
-                Cost = addCreateParams.Cost,
-                IsActive = true,
-                Name = addCreateParams.Name,
-                Type = addCreateParams.Type,
-                ViewsCount = 0,
-                CategoryId = category.Id == null ? 0 : category.Id
+                Name = "406",
             };
-            _unitOfWork.Repository<Advertisement>().Add(ad);
-
-            await _unitOfWork.Complete();
-
-            return ad;
-
         }
     }
 }
