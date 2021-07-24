@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
 using AutoMapper;
@@ -6,6 +8,7 @@ using Core.Entities;
 using Core.Intefraces;
 using Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace API.Controllers
 {
@@ -37,6 +40,47 @@ namespace API.Controllers
            var mapperAd = _mapper.Map<Advertisement,AdvertisementToReturnDto>(createdAd);
 
            return Ok(mapperAd);
+        }
+
+        [HttpGet("GetAd")]
+        public async Task<ActionResult<AdvertisementToReturnDto>> GetAd()
+        {
+            var ads = await _unitOfWork.Repository<Advertisement>().ListAllAsync();
+            var firstAd = ads.Select(x => x.Id).FirstOrDefault();
+
+            var spec = new AdvertisementWithCategoriesAndIdSpecification(firstAd);
+            var ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
+
+            if (Request.Cookies["ad_id"] == null)
+            {
+                Response.Cookies.Append("ad_id",(ad.Id+1).ToString());
+            }
+
+            if (Request.Cookies["ad_id"] != null)
+            {
+                var cookie = Request.Cookies["ad_id"];
+                Int32.TryParse(cookie, out var adId);
+
+                spec = new AdvertisementWithCategoriesAndIdSpecification(adId);
+
+                ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
+
+                if (ad == null)
+                {
+                    Response.Cookies.Delete("ad_id");
+                    return Ok("You reached all the ads, making a circle. Please make request again");
+                }
+                
+                Response.Cookies.Append("ad_id",(adId+1).ToString());
+            }
+
+            ad.ViewsCount += 1;
+            await _unitOfWork.Complete();
+
+            var mappedAd = _mapper.Map<Advertisement, AdvertisementToReturnDto>(ad);
+
+            return Ok(mappedAd);
+
         }
 
         [HttpGet("GetAdByCriteria")]
