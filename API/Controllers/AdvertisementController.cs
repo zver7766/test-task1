@@ -7,6 +7,7 @@ using AutoMapper;
 using Core.Entities;
 using Core.Intefraces;
 using Core.Specifications;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -27,7 +28,14 @@ namespace API.Controllers
             _advertisementService = advertisementService;
         }
 
+        /// <summary>
+        /// Creates and map an advertisement in a Db, using Advertisement Service
+        /// </summary>
+        /// <returns>Created advertisement</returns>
         [HttpPost("CreateAd")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AdvertisementToReturnDto>> CreateAd([FromQuery] AdvertisementToCreate adCreateParams)
         {
             if (adCreateParams == null) return BadRequest("Not correct data");
@@ -42,7 +50,12 @@ namespace API.Controllers
            return Ok(mapperAd);
         }
 
+        /// <summary>
+        ///    Have a simple queue of ads which id`s stores in a cache
+        /// </summary>
+        /// <returns>Mapped advertisement</returns>
         [HttpGet("GetAd")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<AdvertisementToReturnDto>> GetAd()
         {
             var ads = await _unitOfWork.Repository<Advertisement>().ListAllAsync();
@@ -83,7 +96,13 @@ namespace API.Controllers
 
         }
 
+        /// <summary>
+        ///  Retrieves a criteria and then sort by using them
+        /// </summary>
+        /// <returns>Mapped advertisement</returns>
         [HttpGet("GetAdByCriteria")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AdvertisementToReturnDto>> GetAdByCriteria([FromQuery] AdvertisementSpecParams adParams)
         {
             var spec = new AdvertisementWithCategoriesSpecification(adParams);
@@ -106,8 +125,14 @@ namespace API.Controllers
             return Ok(mappedAd);
         }
 
+        /// <summary>
+        /// Delete or deactivate an advertisement
+        /// </summary>
+        /// <returns>An int which represents a success or neither status of the Db</returns>
         [HttpGet("DeleteAd")]
-        public async Task<ActionResult> DeleteAd(int id, bool deactivate = true)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<int>> DeleteAd(int id, bool deactivate = true)
         {
             var ad = await _unitOfWork.Repository<Advertisement>().GetByIdAsync(id);
 
@@ -124,10 +149,19 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Method for gaining statistics 
+        /// </summary>
+        /// <returns>An array of ordered ads by any criteria</returns>
         [HttpGet("Stats")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IReadOnlyList<StatisticToReturnDto>>> Statistics([FromQuery] AdvertisementOrderBySpecParams adOrderByParams)
         { 
             var stats = await _statisticService.GetStatisticAsync(adOrderByParams);
+
+            if (stats.First() == new Statistic() {Name = "404", ViewCount = 0})
+                return NotFound("Stat rejected");
 
             var statsToReturn = 
                _mapper.Map<IEnumerable<Statistic>, IEnumerable<StatisticToReturnDto>>(stats);

@@ -3,6 +3,7 @@ using AutoMapper;
 using Core.Entities;
 using Core.Intefraces;
 using Core.Specifications;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -18,8 +19,14 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Increases the number of click on the selected ad by +1
+        /// </summary>
+        /// <returns>An int which represents a success or neither status of the Db</returns>
         [HttpPost("AdClick")]
-        public async Task<ActionResult> AdClick(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<int>> AdClick(int id)
         {
             var spec = new AdvertisementWithCategoriesAndIdSpecification(id);
             var ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
