@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Entities;
 using Core.Intefraces;
-using Core.Specifications;
 
 namespace Infrastructure.Data
 {

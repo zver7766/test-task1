@@ -8,7 +8,6 @@ using Core.Entities;
 using Core.Intefraces;
 using Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 
 namespace API.Controllers
 {
