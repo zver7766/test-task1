@@ -34,7 +34,6 @@ namespace API.Controllers
         /// <returns>Created advertisement</returns>
         [HttpPost("CreateAd")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AdvertisementToReturnDto>> CreateAd([FromQuery] AdvertisementToCreate adCreateParams)
         {
@@ -57,34 +56,43 @@ namespace API.Controllers
         [HttpGet("GetAd")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<AdvertisementToReturnDto>> GetAd()
-        {
-            var ads = await _unitOfWork.Repository<Advertisement>().ListAllAsync();
-            var firstAdId = ads.Select(x => x.Id).FirstOrDefault();
+        { 
+            const string CookieName = "ad_id";
+            AdvertisementWithCategoriesAndIdSpecification spec;
+            var ad = new Advertisement();
 
-            var spec = new AdvertisementWithCategoriesAndIdSpecification(firstAdId);
-            var ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
-
-            if (Request.Cookies["ad_id"] == null)
+            if (Request.Cookies[CookieName] == null)
             {
-                Response.Cookies.Append("ad_id",(ad.Id+1).ToString());
+                var ads = await _unitOfWork.Repository<Advertisement>().ListAllAsync();
+                var firstAdId = ads.Select(x => x.Id).FirstOrDefault();
+
+                spec = new AdvertisementWithCategoriesAndIdSpecification(firstAdId);
+                ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
+
+                Response.Cookies.Append(CookieName, (ad.Id + 1).ToString());
             }
 
-            if (Request.Cookies["ad_id"] != null)
+            if (Request.Cookies[CookieName] != null)
             {
-                var cookie = Request.Cookies["ad_id"];
+                var cookie = Request.Cookies[CookieName];
                 Int32.TryParse(cookie, out var adId);
 
                 spec = new AdvertisementWithCategoriesAndIdSpecification(adId);
 
                 ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
 
+                Response.Cookies.Append(CookieName, (adId + 1).ToString());
+
                 if (ad == null)
                 {
-                    Response.Cookies.Delete("ad_id");
-                    return Ok("You reached all the ads, making a circle. Please make request again");
+                    Response.Cookies.Delete(CookieName);
+
+                     var ads = await _unitOfWork.Repository<Advertisement>().ListAllAsync();
+                     ad = ads.FirstOrDefault();
+
+                     Response.Cookies.Append(CookieName, (ad.Id + 1).ToString());
                 }
-                
-                Response.Cookies.Append("ad_id",(adId+1).ToString());
+
             }
 
             ad.ViewsCount += 1;
@@ -93,7 +101,6 @@ namespace API.Controllers
             var mappedAd = _mapper.Map<Advertisement, AdvertisementToReturnDto>(ad);
 
             return Ok(mappedAd);
-
         }
 
         /// <summary>
@@ -103,7 +110,7 @@ namespace API.Controllers
         [HttpGet("GetAdByCriteria")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AdvertisementToReturnDto>> GetAdByCriteria([FromQuery] AdvertisementSpecParams adParams)
+        public async Task<ActionResult<IReadOnlyList<AdvertisementToReturnDto>>> GetAdByCriteria([FromQuery] AdvertisementSpecParams adParams)
         {
             var spec = new AdvertisementWithCategoriesSpecification(adParams);
 
