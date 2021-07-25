@@ -31,34 +31,35 @@ namespace Infrastructure.Data
 
             var isValidUrl = true;
 
+
             if (addCreateParams.Type is AdType.BannerAd or AdType.VideoAd)
-                isValidUrl = Uri.IsWellFormedUriString(addCreateParams.Name, UriKind.RelativeOrAbsolute);
+                isValidUrl = UrlValidator.ValidateUrl(addCreateParams.Name);
 
             Advertisement ad;
-            if (isValidUrl)
-            { 
-                ad = new Advertisement
+
+            if (!isValidUrl)
+                return ad = new Advertisement
                 {
-                    Content = addCreateParams.Content,
-                    Cost = addCreateParams.Cost,
-                    IsActive = true,
-                    Name = addCreateParams.Name,
-                    Type = addCreateParams.Type,
-                    ViewsCount = 0,
-                    CategoryId = category.Id == null ? 0 : category.Id,
-                    Clicks = 0
+                    Name = "406",
                 };
-                _unitOfWork.Repository<Advertisement>().Add(ad);
 
-                await _unitOfWork.Complete();
-
-                return ad;
-            }
-
-            return ad = new Advertisement
+            ad = new Advertisement
             {
-                Name = "406",
+                Content = addCreateParams.Content,
+                Cost = addCreateParams.Cost,
+                IsActive = true,
+                Name = addCreateParams.Name,
+                Type = addCreateParams.Type,
+                ViewsCount = 0,
+                CategoryId = category.Id == null ? 0 : category.Id,
+                Clicks = 0
             };
+            _unitOfWork.Repository<Advertisement>().Add(ad);
+
+            await _unitOfWork.Complete();
+
+            return ad;
+
         }
     }
 }

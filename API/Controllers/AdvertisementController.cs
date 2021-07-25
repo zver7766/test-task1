@@ -38,7 +38,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AdvertisementToReturnDto>> CreateAd([FromQuery] AdvertisementToCreate adCreateParams)
         {
-            if (adCreateParams == null) return BadRequest("Not correct data");
+            if (adCreateParams == null || !ModelState.IsValid) return BadRequest("Not correct data");
 
            var createdAd = await _advertisementService.CreateAdAsync(adCreateParams);
 
@@ -59,9 +59,9 @@ namespace API.Controllers
         public async Task<ActionResult<AdvertisementToReturnDto>> GetAd()
         {
             var ads = await _unitOfWork.Repository<Advertisement>().ListAllAsync();
-            var firstAd = ads.Select(x => x.Id).FirstOrDefault();
+            var firstAdId = ads.Select(x => x.Id).FirstOrDefault();
 
-            var spec = new AdvertisementWithCategoriesAndIdSpecification(firstAd);
+            var spec = new AdvertisementWithCategoriesAndIdSpecification(firstAdId);
             var ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
 
             if (Request.Cookies["ad_id"] == null)
@@ -109,7 +109,7 @@ namespace API.Controllers
 
             var ad = await _unitOfWork.Repository<Advertisement>().ListAsync(spec);
 
-            if (ad == null) return NotFound("Ad was not found");
+            if (ad == null || ad.Count == 0) return NotFound("Ad was not found / Invalid criteria");
 
             foreach (var item in ad)
             {

@@ -26,6 +26,7 @@ namespace API.Controllers
         [HttpPost("AdClick")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<int>> AdClick(int id)
         {
             var spec = new AdvertisementWithCategoriesAndIdSpecification(id);
