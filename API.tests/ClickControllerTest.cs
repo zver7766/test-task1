@@ -20,19 +20,17 @@ namespace API.Tests
         public async void Click_Ad_Returns_404()
         {
             // Arrange
-            const int ID = 1;
+            const int Id = 1;
 
-            var mapper = TestHelper.CreateMapper();
-
-            var spec = new AdvertisementWithCategoriesAndIdSpecification(ID);
+            var spec = new AdvertisementWithCategoriesAndIdSpecification(Id);
             var mockDb = new Mock<IUnitOfWork>();
             mockDb.Setup(db => db.Repository<Advertisement>().GetEntityWithSpec(spec))
                 .Returns(Task.FromResult(null as Advertisement));
 
-            var controller = new ClickController(mockDb.Object, mapper);
+            var controller = new ClickController(mockDb.Object);
             // Act
 
-            var result = await controller.AdClick(ID);
+            var result = await controller.AdClick(Id);
             // Assert
 
             var viewResult = Assert.IsType<NotFoundObjectResult>(result.Result);
@@ -45,9 +43,7 @@ namespace API.Tests
         public async void Click_Ad_Increase_Clicks_And_Views_Returns_Int_From_Db()
         {
             // Arrange
-            const int ID = 1;
-
-            var mapper = TestHelper.CreateMapper();
+            const int Id = 1;
 
             var entity = new Advertisement
             {
@@ -61,16 +57,16 @@ namespace API.Tests
                 Clicks=  3
             };
 
-            var spec = new AdvertisementWithCategoriesAndIdSpecification(ID);
+            var spec = new AdvertisementWithCategoriesAndIdSpecification(Id);
             var mockDb = new Mock<IUnitOfWork>();
             mockDb.Setup(db => db.Repository<Advertisement>().GetEntityWithSpec(spec))
                 .Returns(Task.FromResult(entity));
 
-            var controller = new ClickController(mockDb.Object, mapper);
+            var controller = new ClickController(mockDb.Object);
 
             // Act
 
-            var result = await controller.AdClick(ID);
+            var result = await controller.AdClick(Id);
             // Assert
 
         }

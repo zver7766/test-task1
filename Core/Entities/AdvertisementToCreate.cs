@@ -5,9 +5,9 @@ namespace Core.Entities
     public class AdvertisementToCreate
     {
         [Required]
-        public AdType Type { get; set; }
+        public AdTypeToCreate Type { get; set; } = AdTypeToCreate.Auto;
         [Required]
-        [MaxLength(60)]
+        [MaxLength(150)]
         public string Name { get; set; }
         [Required]
         [MaxLength(60)]

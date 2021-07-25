@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using AutoMapper;
 using Core.Entities;
 using Core.Intefraces;
 using Core.Specifications;
@@ -11,12 +10,10 @@ namespace API.Controllers
     public class ClickController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public ClickController(IUnitOfWork unitOfWork,IMapper mapper)
+        public ClickController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         /// <summary>

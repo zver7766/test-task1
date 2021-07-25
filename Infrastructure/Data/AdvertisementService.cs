@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Core.Entities;
 using Core.Intefraces;
@@ -25,17 +26,20 @@ namespace Infrastructure.Data
                 await _unitOfWork.Complete();
             }
 
-
             var categoriesToFilter = await _unitOfWork.Repository<Category>().ListAllAsync();
             var category = categoriesToFilter.FirstOrDefault(x => x.Name == addCreateParams.Category);
 
-            var isValidUrl = true;
-
-
-            if (addCreateParams.Type is AdType.BannerAd or AdType.VideoAd)
-                isValidUrl = UrlValidator.ValidateUrl(addCreateParams.Name);
-
             Advertisement ad;
+            var isValidUrl = true;
+            var type = (AdType)addCreateParams.Type-1;
+
+            if (addCreateParams.Type is AdTypeToCreate.Auto)
+            {
+                type = DefineType(addCreateParams.Name);
+            }
+
+            if (type is AdType.BannerAd)
+                isValidUrl = UrlValidator.ValidateUrl(addCreateParams.Name);
 
             if (!isValidUrl)
                 return ad = new Advertisement
@@ -49,7 +53,7 @@ namespace Infrastructure.Data
                 Cost = addCreateParams.Cost,
                 IsActive = true,
                 Name = addCreateParams.Name,
-                Type = addCreateParams.Type,
+                Type = type,
                 ViewsCount = 0,
                 CategoryId = category.Id == null ? 0 : category.Id,
                 Clicks = 0
@@ -60,6 +64,21 @@ namespace Infrastructure.Data
 
             return ad;
 
+        }
+
+        private AdType DefineType(string name)
+        {
+            var pattern = "<(“[^”]*”|'[^’]*’|[^'”>])*>";
+            if (Regex.IsMatch(name, pattern, RegexOptions.IgnoreCase))
+                return AdType.HtmlAd;
+            
+            if (name.EndsWith(".mp4") || name.EndsWith(".avi"))
+                return AdType.VideoAd;
+
+            if (Uri.TryCreate(name,UriKind.Absolute,out Uri result))
+                return AdType.BannerAd;
+
+            return AdType.TextAd;
         }
     }
 }
