@@ -1,20 +1,13 @@
+using System.Threading.Tasks;
 using API.Controllers;
-using API.Helpers;
-using AutoMapper;
+using API.Tests.Helpers;
 using Core.Entities;
 using Core.Intefraces;
-using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Tests.Helpers;
-using Core.Specifications;
-using Infrastructure.Data;
 using Moq;
 using Xunit;
 
-namespace API.tests
+namespace API.Tests.ControllersTests
 {
     public class AdvertisementControllerTest
     {
@@ -61,7 +54,7 @@ namespace API.tests
                 Category = "Toys",
                 Cost = 10,
                 Content = "Content",
-                Type = AdType.BannerAd
+                Type = AdTypeToCreate.BannerAd
             };
 
             var returnsIncorrectAdd = new Advertisement
@@ -88,40 +81,5 @@ namespace API.tests
             Assert.Equal("Ad does not created or Url not correct", viewResult?.Value);
         }
 
-        [Fact]
-        public async void Add_Click_Returns_The_Answer_From_Db()
-        {
-            // Arrange
-            int id = 1;
-
-            var fakeAd = A.CollectionOfDummy<Advertisement>(id).First();
-            var dataStore = A.Fake<IUnitOfWork>();
-            A.CallTo(() => dataStore.Repository<Advertisement>().GetByIdAsync(id))
-                .Returns(Task.FromResult(fakeAd));
-
-            var mapper = TestHelper.CreateMapper();
-
-            var statService = new StatisticService(dataStore);
-            var adService = new AdvertisementService(dataStore);
-
-            var adToCreate = new AdvertisementToCreate
-            {
-                Category = "Toys",
-                Content = "content",
-                Cost = 2,
-                Name = "Name",
-                Type = AdType.TextAd
-            };
-
-            var controller = new AdvertisementController(dataStore, mapper, statService, adService);
-            // Act
-
-            var actionResult = await controller.CreateAd(adToCreate);
-            // Assert
-
-            var result = actionResult.Result as OkObjectResult;
-            var returnInteger = result.Value;
-
-        }
     }
 }
