@@ -3,6 +3,7 @@ using API.Controllers;
 using API.Tests.Helpers;
 using Core.Entities;
 using Core.Intefraces;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
