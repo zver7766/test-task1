@@ -1,4 +1,5 @@
 ﻿using Core.Intefraces;
+using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 

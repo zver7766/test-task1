@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Core.Entities;
 using Core.Specifications;
 
-namespace Core.Intefraces
+namespace Core.Interfaces
 {
     public interface IStatisticService
     {
