@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using API.Commands;
 using Core.Entities;
 using Core.Intefraces;
 using Core.Specifications;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +11,11 @@ namespace API.Controllers
 {
     public class ClickController : BaseApiController
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
 
-        public ClickController(IUnitOfWork unitOfWork)
+        public ClickController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -25,19 +27,9 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<int>> AdClick(int id)
         {
-            var spec = new AdvertisementWithCategoriesAndIdSpecification(id);
-            var ad = await _unitOfWork.Repository<Advertisement>().GetEntityWithSpec(spec);
-
-            if (ad == null) return NotFound("Ad was not found / Ad with this id inactive");
-
-            ad.ViewsCount += 1;
-            ad.Clicks += 1;
-
-            _unitOfWork.Repository<Advertisement>().Update(ad);
-
-            var result = await _unitOfWork.Complete();
-
-            return Ok(result);
+            var command = new AdClickCommand(id);
+            var result = await _mediator.Send(command);
+            return result == 0 ? NotFound("Ad was not found / Ad with this id inactive") : Ok(result);
         }
     }
 }

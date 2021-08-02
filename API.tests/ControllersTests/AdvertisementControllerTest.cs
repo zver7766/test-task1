@@ -1,9 +1,12 @@
 using System.Threading.Tasks;
+using API.Commands;
 using API.Controllers;
+using API.Handlers;
 using API.Tests.Helpers;
 using Core.Entities;
 using Core.Intefraces;
 using Core.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,21 +18,25 @@ namespace API.Tests.ControllersTests
 
         [Fact]
         public async void Add_Ad_Returns_View_Result_With_User_Model()
-        { 
+        {
             // Arrange
-            var mockDb = new Mock<IUnitOfWork>();
-            var mockStatService = new Mock<IStatisticService>();
-            var mockAdService = new Mock<IAdvertisementService>();
+
+             var mockAdService = new Mock<IAdvertisementService>();
+
+            var newCreateAdParams = new AdvertisementToCreate();
 
             var mapper = TestHelper.CreateMapper();
-            var controller = new AdvertisementController(mockDb.Object,mapper,mockStatService.Object,
-                mockAdService.Object);
+
+            var mediator = new Mock<IMediator>();
+            var command = new CreateAdCommand(newCreateAdParams);
+            var handler = new CreateAdHandler(mapper,mockAdService.Object);
+
+            var controller = new AdvertisementController(mediator.Object);
 
             controller.ModelState.AddModelError("Name", "Required");
             controller.ModelState.AddModelError("Content", "Required");
             controller.ModelState.AddModelError("Category", "Required");
 
-            var newCreateAdParams = new AdvertisementToCreate();
 
             // Act
 
@@ -37,7 +44,7 @@ namespace API.Tests.ControllersTests
             // Assert
             var viewResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             Assert.Equal(400,viewResult?.StatusCode);
-            Assert.Equal("Not correct data", viewResult?.Value);
+            Assert.Equal("Add was not created", viewResult?.Value);
 
         }
 
@@ -70,8 +77,12 @@ namespace API.Tests.ControllersTests
 
             var mapper = TestHelper.CreateMapper();
 
-            var controller = new AdvertisementController(mockDb.Object, mapper, mockStatService.Object,
-                mockAdService.Object);
+            var mediator = new Mock<IMediator>();
+            var command = new CreateAdCommand(addToCreateParams);
+            var handler = new CreateAdHandler(mapper, mockAdService.Object);
+
+
+            var controller = new AdvertisementController(mediator.Object);
 
             // Act
 
@@ -79,7 +90,7 @@ namespace API.Tests.ControllersTests
             // Result
             var viewResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             Assert.Equal(400, viewResult?.StatusCode);
-            Assert.Equal("Ad does not created or Url not correct", viewResult?.Value);
+            Assert.Equal("Add was not created", viewResult?.Value);
         }
 
     }

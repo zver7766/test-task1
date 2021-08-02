@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using API.Extensions;
 using API.Helpers;
 using Infrastructure.Data;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -35,6 +37,11 @@ namespace API
             services.AddApplicationServices();
 
             services.AddSwaggerDocumentation();
+
+            services.AddSingleton<IHttpContextAccessor,
+                HttpContextAccessor>();
+
+            services.AddMediatR(typeof(Startup)); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
